@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
+import Slider from './components/Slider';
 
 const App = () => {
 
@@ -20,7 +21,7 @@ const App = () => {
   useEffect(() => {
     setEssentialCalories(weight * exerciseFrecuency * 22);
     setGoalCalories(essentialCalories * goalPercentage / 100.0);
-    setTotalCalories(goal == 'U' ? essentialCalories + goalCalories : essentialCalories - goalCalories);
+    setTotalCalories(goal === 'U' ? essentialCalories + goalCalories : essentialCalories - goalCalories);
     setTotalProteins(proteins * weight);
     setTotalFats(fats * weight);
     setCarbohydrates((totalCalories - (totalProteins * 4 + totalFats * 9))/4);
@@ -36,43 +37,32 @@ const App = () => {
     setMaxPercentage(30);
   }
 
-  const goalUpdater = (e:any) => {
-    setGoalPercentage(parseInt(e.target.value))
-  }
-
   return (
     <div className="">
-      <h1>Calc diet</h1>
-      <p>weight {weight.toFixed(1)} (kg)</p>
-      <button
-        className="w-5  bg-red-600"
-        onClick={() => {setWeight(weight - 0.1)}}
-        >
-        -
-      </button>
-      <input
-        type="range"
-        min="30" max="130" step="0.1"
+
+      <h1>Calc diet {weight}</h1>
+
+      <Slider
+        title="Weight"
+        min="30"
+        max="130"
+        step="0.1"
         value={weight}
-        onChange={(e) => {
-          setWeight(parseFloat(e.target.value));
-        }}
+        setValue={setWeight}
+        measurement="Kg"
       />
-      <button
-        className="w-5  bg-red-600"
-        onClick={() => {setWeight(weight + 0.1)}}
-        >
-        +
-      </button>
+
       <p>diary activity {exerciseFrecuency}</p>
-      <input
-        type="range"
-        min="1.2" max="2.2" step="0.1"
+
+      <Slider
+        title="Actividad fisica"
+        min="1.2"
+        max="2.2"
+        step="0.1"
         value={exerciseFrecuency}
-        onChange={(e) => {
-          setExerciseFrecuency(parseFloat(e.target.value));
-        }}
+        setValue={setExerciseFrecuency}
       />
+
       <p>Formula</p>
       <p>Calorias Necesarias : {weight.toFixed(2)} X {exerciseFrecuency} X 22 = {essentialCalories.toFixed(2)} kcal</p>
       <p>Objetivo</p>
@@ -84,34 +74,43 @@ const App = () => {
         <input type="radio" name={goal} value="low" onChange={objetivoL}/>
         bajar de peso
       </label>
-      <p>Rango segun el objetivo {goal == 'U' ? "+" : "-"}  {goalPercentage}%</p>
-      <input
-        type="range"
-        min="10" max={maxPercentage} value={goalPercentage}
-        onChange={e => goalUpdater(e)}
-        step="1"/>
+
+      <Slider
+        title={goal === 'U' ? "Porcentage de ganancia" : "Porcentage de perdida"}
+        min="10"
+        max={maxPercentage}
+        step="1"
+        value={goalPercentage}
+        setValue={setGoalPercentage}
+        measurement="%"
+      />
+
       <p>Se muestra el valor de las calorias objetivos {goalCalories.toFixed(2)} kcal</p>
-      <p>total Calories : {essentialCalories.toFixed(2)} {goal == 'U' ? "+" : "-"} {goalCalories.toFixed(2)} = {totalCalories.toFixed(2)}</p>
+      <p>Calorias totales : {essentialCalories.toFixed(2)} {goal == 'U' ? "+" : "-"} {goalCalories.toFixed(2)} = {totalCalories.toFixed(2)}</p>
       <h3>Calculo de macronutrientes</h3>
-      <p>Hint de los valores</p>
-      <p>Proteinas {proteins} g por kilogramo de peso</p>
-      <input
-        type="range"
-        min="1.5" max="2.5" step="0.1"
+
+      <Slider
+        title="Pretinas"
+        min="1.5"
+        max="2.5"
+        step="0.1"
         value={proteins}
-        onChange={(e) => {
-          setProteins(parseFloat(e.target.value));
-        }}/>
+        setValue={setProteins}
+        measurement="g por Kg de peso"
+      />
+
       <p>Proteinas totales: {totalProteins.toFixed(2)} g  = {(totalProteins * 4.0).toFixed(2)} kcal</p>
-      <p>Grasas {fats} g por kilogramo de peso</p>
-      <input
-        type="range"
-        min="0.3" max="1.5" step="0.1"
+
+      <Slider
+        title="Grasas"
+        min="0.3"
+        max="1.5"
+        step="0.1"
         value={fats}
-        onChange={(e) => {
-          setFats(parseFloat(e.target.value));
-        }}
-        />
+        setValue={setFats}
+        measurement="g por Kg de peso"
+      />
+
       <p>Grasas totales: {totalFats.toFixed(2)} g = {(totalFats * 9).toFixed(2)} kcal</p>
       <p>Carbohidratos es el resto</p>
       <p>Carbohidratos totales: {carbohydrates.toFixed(2)} g = {(carbohydrates * 4.0).toFixed(2)} kcal</p>
